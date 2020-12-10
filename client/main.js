@@ -1,30 +1,66 @@
 const url = 'http://localhost:3000'
 const postsContainer = document.getElementById('posts')
 
+const appState = {
+  users: [],
+  posts: [],
+}
+
+function getUserById(id) {
+  const {users} = appState
+
+  let userName = 'Sem autor'
+
+  users.forEach((usuario) => {
+    if (id === usuario.id) userName = usuario.name
+  })
+
+  return userName
+}
+
 function criarMarcacao(post) {
-  // const {title, body, userId} = post
+  const {title, body, userId} = post
+
+  const userName = getUserById(userId)
+
   return `
     <div class="container">
       <div class="post-title">
-        ${post.title}
+        ${title}
       </div>
       <div class="post-body">
-        ${post.body}
+        ${body}
       </div>
       <div class="post-author">
-        ${post.userId}
+        ${userName}
       </div>
     </div>
   `
 }
 
+function createApp() {
+  const {users, posts} = appState
+
+  if (users.length && posts.length) {
+    let marcacaoFinal = ''
+
+    posts.forEach((post) => (marcacaoFinal += criarMarcacao(post)))
+
+    postsContainer.innerHTML = marcacaoFinal
+  }
+}
+
 fetch(`${url}/posts`)
   .then((resposta) => resposta.json())
   .then((posts) => {
-    const primeirosDez = posts.slice(0, 10)
-    let marcacaoFinal = ''
+    const postsSelecionados = posts.slice(0, 10)
+    appState.posts = postsSelecionados
+    createApp()
+  })
 
-    primeirosDez.forEach((post) => (marcacaoFinal += criarMarcacao(post)))
-
-    postsContainer.innerHTML = marcacaoFinal
+fetch(`${url}/users`)
+  .then((resposta) => resposta.json())
+  .then((usuarios) => {
+    appState.users = usuarios
+    createApp()
   })

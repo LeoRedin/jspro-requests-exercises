@@ -4,6 +4,7 @@ const postsContainer = document.getElementById('posts')
 const appState = {
   users: [],
   posts: [],
+  comments: [],
 }
 
 function getUserById(id) {
@@ -62,5 +63,12 @@ fetch(`${url}/users`)
   .then((resposta) => resposta.json())
   .then((usuarios) => {
     appState.users = usuarios
+    createApp()
+  })
+
+fetch(`${url}/comments`)
+  .then((resposta) => resposta.json())
+  .then((comentarios) => {
+    appState.comments = comentarios
     createApp()
   })

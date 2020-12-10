@@ -19,10 +19,46 @@ function getUserById(id) {
   return userName
 }
 
-function criarMarcacao(post) {
-  const {title, body, userId} = post
+function getCommentsByPostId(postId) {
+  const {comments} = appState
+
+  /*   const commentsByPost = []
+
+  comments.forEach((comentario) => {
+    if (comentario.postId === postId) commentsByPost.push(comentario)
+  })
+
+  return commentsByPost */
+
+  return comments.filter((comentario) => comentario.postId === postId)
+}
+
+function criarComentarios(comentarios) {
+  let marcacao = ''
+
+  comentarios.forEach(
+    (comentario) =>
+      (marcacao += `
+        <div class="comment">
+          <div class="comment-email">
+            ${comentario.email}
+          </div>
+          <div class="comment-body">
+            ${comentario.body}
+          </div>
+        </div>
+      `),
+  )
+
+  return marcacao
+}
+
+function criarPost(post) {
+  const {title, body, userId, id} = post
 
   const userName = getUserById(userId)
+
+  const comments = getCommentsByPostId(id)
 
   return `
     <div class="container">
@@ -35,17 +71,20 @@ function criarMarcacao(post) {
       <div class="post-author">
         ${userName}
       </div>
+      <div class="comments">
+        ${criarComentarios(comments)}
+      </div>
     </div>
   `
 }
 
 function createApp() {
-  const {users, posts} = appState
+  const {users, posts, comments} = appState
 
-  if (users.length && posts.length) {
+  if (users.length && posts.length && comments.length) {
     let marcacaoFinal = ''
 
-    posts.forEach((post) => (marcacaoFinal += criarMarcacao(post)))
+    posts.forEach((post) => (marcacaoFinal += criarPost(post)))
 
     postsContainer.innerHTML = marcacaoFinal
   }
@@ -72,3 +111,20 @@ fetch(`${url}/comments`)
     appState.comments = comentarios
     createApp()
   })
+
+// OUTRA MANEIRA DE LIDAR COM VÀRIAS PROMISES
+const promises = []
+const state = {
+  users: [],
+  comments: [],
+  posts: [],
+}
+const paths = ['users', 'comments', 'posts']
+
+paths.forEach(function (path) {
+  promises.push(fetch(`${url}/${path}`).then((resposta) => resposta.json()))
+})
+
+Promise.allSettled(promises).then((response) => {
+  // console.log(response)
+})

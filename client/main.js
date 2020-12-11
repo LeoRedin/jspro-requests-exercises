@@ -54,6 +54,27 @@ function criarComentarios(comentarios) {
   return marcacao
 }
 
+function novoComentario() {
+  const form = document.createElement('form')
+  form.classList.add('criar-comentario')
+
+  const textarea = document.createElement('textarea')
+
+  const br = document.createElement('br')
+
+  const button = document.createElement('button')
+  button.textContent = 'Adicionar comentário'
+
+  form.appendChild(textarea)
+  form.appendChild(br)
+  form.appendChild(button)
+
+  const novoComentario = document.createElement('div')
+  novoComentario.appendChild(form)
+
+  return novoComentario.innerHTML
+}
+
 function criarPost(post) {
   const {title, body, userId, id} = post
 
@@ -75,8 +96,26 @@ function criarPost(post) {
       <div class="comments">
         ${criarComentarios(comments)}
       </div>
+      <div class="novo-comentario">
+        ${novoComentario()}
+      </div>
     </div>
   `
+}
+
+function criarEventos() {
+  const addCommentForm = document.querySelectorAll('form.criar-comentario')
+  addCommentForm.forEach((formulario) =>
+    formulario.addEventListener('submit', (evento) => {
+      evento.preventDefault()
+      const form = evento.target
+      const value = form.querySelector('textarea').value
+      console.log(
+        '🚀 ~ file: main.js ~ line 117 ~ formulario.addEventListener ~ value',
+        value,
+      )
+    }),
+  )
 }
 
 function createApp() {
@@ -88,6 +127,8 @@ function createApp() {
     posts.forEach((post) => (marcacaoFinal += criarPost(post)))
 
     postsContainer.innerHTML = marcacaoFinal
+
+    criarEventos()
   }
 }
 

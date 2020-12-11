@@ -1,5 +1,6 @@
 const url = 'http://localhost:3000'
 const postsContainer = document.getElementById('posts')
+const formCriarUsuario = document.getElementById('criar-usuario')
 
 const appState = {
   users: [],
@@ -112,19 +113,20 @@ fetch(`${url}/comments`)
     createApp()
   })
 
-// OUTRA MANEIRA DE LIDAR COM VÀRIAS PROMISES
-const promises = []
-const state = {
-  users: [],
-  comments: [],
-  posts: [],
-}
-const paths = ['users', 'comments', 'posts']
+formCriarUsuario.addEventListener('submit', (event) => {
+  event.preventDefault()
 
-paths.forEach(function (path) {
-  promises.push(fetch(`${url}/${path}`).then((resposta) => resposta.json()))
-})
+  const usuario = {
+    name: document.getElementById('name').value,
+    username: document.getElementById('username').value,
+    email: document.getElementById('email').value,
+  }
 
-Promise.allSettled(promises).then((response) => {
-  // console.log(response)
+  fetch(`${url}/users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(usuario),
+  })
 })
